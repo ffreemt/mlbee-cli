@@ -1,0 +1,21 @@
+{
+    "dependencies": {
+        "npm-run-all": "^4.1.5"
+    },
+    "scripts": {
+        "start": "pyright && pytest && yarn style",
+        "test": "nodemon -w tests -w mlbee_cli -x pytest tests",
+        "pyright": "nodemon -w mlbee_cli -w .venv -e .py -x pyright mlbee_cli tests",
+        "pytest": "nodemon -w tests -w mlbee_cli -e .py -x pytest tests mlbee_cli",
+        "style": "nodemon -w mlbee_cli -w tests -x \"black tests mlbee_cli && python -m flake8\"",
+        "docstyle": "nodemon -w mlbee_cli -w tests -x pydocstyle --convention=google tests mlbee_cli",
+        "pylint": "nodemon -w mlbee_cli -e .py -x pylint mlbee_cli",
+        "test:mlbee_cli": "nodemon -w tests -e .py -x pytest -k mlbee_cli tests",
+        "publish": "poetry build && poetry publish",
+        "black": "black tests mlbee_cli",
+        "flake8": "flake8 tests mlbee_cli",
+        "pflake8": "pflake8 tests mlbee_cli",
+        "pep257": "pep257 tests mlbee_cli",
+        "final": "run-s docstyle black flake8 pytest"
+    }
+}
