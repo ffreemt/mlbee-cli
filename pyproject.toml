@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mlbee"
-version = "0.1.0-alpha.0"
+version = "0.1.0-alpha.1"
 description = "mlbee cli: a multilingual aligner based on a machine learning model"
 authors = ["ffreemt"]
 license = "MIT"
