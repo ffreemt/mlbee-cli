@@ -1,0 +1,38 @@
+about-time==3.1.1
+alive-progress==2.4.1; python_version >= "3.7" and python_version < "4"
+anyio==3.6.1; python_full_version >= "3.6.2" and python_version >= "3.7"
+asttokens==2.0.5
+cchardet==2.1.7
+certifi==2022.5.18.1; python_version >= "3.7"
+click==8.1.3; python_version >= "3.7"
+colorama==0.4.4; python_full_version >= "3.8.3" and sys_platform == "win32" and python_full_version < "4.0.0" and (python_version >= "3.7" and python_full_version < "3.0.0" and platform_system == "Windows" or platform_system == "Windows" and python_version >= "3.7" and python_full_version >= "3.5.0")
+environs==9.5.0; python_full_version >= "3.8.3" and python_full_version < "4.0.0" and python_version >= "3.6"
+executing==0.8.3
+grapheme==0.6.0; python_version >= "3.7" and python_version < "4"
+h11==0.12.0; python_version >= "3.7"
+httpcore==0.15.0; python_version >= "3.7"
+httpx==0.23.0; python_version >= "3.7"
+icecream==2.1.2
+idna==3.3; python_version >= "3.7" and python_full_version >= "3.6.2"
+install==1.3.5; python_version >= "3.5"
+jinja2==3.1.2; python_version >= "3.7"
+logzero==1.7.0
+markupsafe==2.1.1; python_version >= "3.7"
+marshmallow==3.16.0; python_full_version >= "3.8.3" and python_full_version < "4.0.0" and python_version >= "3.7"
+numpy==1.22.4
+packaging==21.3; python_full_version >= "3.8.3" and python_full_version < "4.0.0" and python_version >= "3.7"
+pandas==1.4.2; python_version >= "3.8"
+pendulum==2.1.2; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.5.0")
+pygments==2.12.0; python_version >= "3.6"
+pyparsing==3.0.9; python_full_version >= "3.8.3" and python_full_version < "4.0.0" and python_version >= "3.7"
+python-dateutil==2.8.2; python_version >= "3.8" and python_full_version < "3.0.0" or python_full_version >= "3.5.0" and python_version >= "3.8"
+python-dotenv==0.20.0; python_full_version >= "3.8.3" and python_full_version < "4.0.0" and python_version >= "3.6"
+pytz==2022.1; python_version >= "3.8"
+pytzdata==2020.1; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.5.0"
+rfc3986==1.5.0; python_version >= "3.7"
+set-loglevel==0.1.2; python_full_version >= "3.8.3" and python_full_version < "4.0.0"
+six==1.16.0; python_version >= "3.8" and python_full_version < "3.0.0" or python_full_version >= "3.5.0" and python_version >= "3.8"
+sniffio==1.2.0; python_full_version >= "3.6.2" and python_version >= "3.7"
+tenacity==8.0.1; python_version >= "3.6"
+typer==0.4.1; python_version >= "3.6"
+xlsxwriter==3.0.3; python_version >= "3.4"

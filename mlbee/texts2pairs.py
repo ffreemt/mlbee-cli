@@ -4,33 +4,37 @@ from typing import List
 
 import httpx
 from logzero import logger
+from tenacity import retry, stop_after_attempt, stop_after_delay
 
-url = "https://hf.space/embed/mikeee/radio-mlbee/+/api/predict/"
+url_hf = "https://hf.space/embed/mikeee/radio-mlbee/+/api/predict/"
 
 # 30s timeout on connect, no timeout elsewhere
-timeout = httpx.Timeout(None, connect=30)
+timeout_ = httpx.Timeout(None, connect=3600)
 
-
+@retry(stop=(stop_after_delay(10) | stop_after_attempt(5)))
 def texts2pairs(
     text1: str,
     text2: str,
-    url: str = url,
-    timeout: httpx.Timeout = timeout,
+    split_to_sents: bool = False,
+    url: str = url_hf,
+    timeout: httpx.Timeout = timeout_,
 ) -> List:
-    r"""Sent texts to url.
+    r"""Sent texts to url for aligning.
 
     Args:
         text1: text (str)
         text2: text (str)
         url: service
         timeout: default connect=10s, None elesewhere
+        split_to_sents: split text to sents when True, default False
 
     text1 = "test1\n a b c\nlove"; text2 = "测试\n爱"
     """
     try:
         resp = httpx.post(
             url,
-            json={"data": [text1, text2]},
+            # json={"data": [text1, text2]},
+            json={"data": [text1, text2, split_to_sents, False]},  # 4th param: preview, always set to False
             timeout=timeout,
         )
         resp.raise_for_status()
