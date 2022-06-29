@@ -35,9 +35,12 @@ from mlbee.alive_bar import alive_bar
 
 # from mlbee.text2lists import text2lists
 
-api_url_default = "http://127.0.0.1:7860/api/predict"
-api_url_default = "https://hf.space/embed/mikeee/radio-mlbee/+/api/predict/"
-api_url_default = "https://hf.space/embed/mikeee/radio-mlbee-dev/+/api/predict/"
+api_url_forindo = "http://forindo.net:7860/api/predict"
+api_url_local = "http://127.0.0.1:7860/api/predict"
+api_url_hf_dev = "https://hf.space/embed/mikeee/radio-mlbee-dev/+/api/predict/"
+api_url_hf = "https://hf.space/embed/mikeee/radio-mlbee/+/api/predict/"
+api_url_default = api_url_hf
+api_url_default = api_url_forindo
 
 logzero.loglevel(set_loglevel())
 
@@ -117,7 +120,7 @@ def main(
         help="Save csv.",
     ),
     api_url: str = typer.Option(
-        api_url_default, "--api-url", "-a", help="URL of the api to use."
+        api_url_default, "--api-url", "-a", help=f"URL of the api to use. shortcuts: local={api_url_local}, hf={api_url_hf}, forindo={api_url_forindo}."
     ),
     version: Optional[bool] = typer.Option(  # pylint: disable=(unused-argument
         None,
@@ -145,9 +148,16 @@ def main(
 
     * mlbee file1 file2 --no-save-xlsx --save-csv  # just csv
     """
+    if api_url.startswith("local"):
+        api_url = api_url_local
+    if api_url.startswith("forindo"):
+        api_url = api_url_forindo
+    if api_url.startswith("hf") or api_url.startswith("huggingface"):
+        api_url = api_url_hf
 
     logger.debug("files: %s", files)
     _ = [
+        "api_url",
         "files",
         "split_to_sents",
         "sep_mixed_text",
@@ -157,6 +167,7 @@ def main(
         "save_csv",
     ]
     options = [
+        api_url,
         files,
         split_to_sents,
         sep_mixed_text,
