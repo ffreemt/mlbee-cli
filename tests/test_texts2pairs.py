@@ -1,4 +1,4 @@
-"""Test texts2pairs
+"""Test texts2pairs.
 
 {
  'data': [

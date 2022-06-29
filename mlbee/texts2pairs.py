@@ -1,22 +1,24 @@
 """Align two texts."""
 # pylint=disable=invalid-name
-from typing import List
+from typing import List, Optional
 
 import httpx
 from logzero import logger
-from tenacity import retry, stop_after_attempt, stop_after_delay
+from tenacity import retry
+from tenacity.stop import stop_after_attempt, stop_after_delay
 
 url_hf = "https://hf.space/embed/mikeee/radio-mlbee/+/api/predict/"
 
-# 30s timeout on connect, no timeout elsewhere
-timeout_ = httpx.Timeout(None, connect=3600)
+# 60s timeout on connect, no timeout elsewhere
+timeout_ = httpx.Timeout(None, connect=60)
+
 
 @retry(stop=(stop_after_delay(10) | stop_after_attempt(5)))
 def texts2pairs(
     text1: str,
     text2: str,
     split_to_sents: bool = False,
-    url: str = url_hf,
+    url: Optional[str] = None,
     timeout: httpx.Timeout = timeout_,
 ) -> List:
     r"""Sent texts to url for aligning.
@@ -24,17 +26,21 @@ def texts2pairs(
     Args:
         text1: text (str)
         text2: text (str)
-        url: service
+        url: service api, if None, set to default url_hf
         timeout: default connect=10s, None elesewhere
         split_to_sents: split text to sents when True, default False
 
     text1 = "test1\n a b c\nlove"; text2 = "测试\n爱"
     """
+    if url is None:
+        url = url_hf
     try:
         resp = httpx.post(
             url,
             # json={"data": [text1, text2]},
-            json={"data": [text1, text2, split_to_sents, False]},  # 4th param: preview, always set to False
+            json={
+                "data": [text1, text2, split_to_sents, False]
+            },  # 4th param: preview, always set to False
             timeout=timeout,
         )
         resp.raise_for_status()

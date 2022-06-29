@@ -57,7 +57,7 @@ def save_xlsx_tsv_csv(
         _ = file.with_suffix(".csv")
         _ = gen_filename(_)
         df_lst.to_csv(_, index=False, header=False, encoding="gbk")  # or GB18030
-        logger.info("csv written to %s", Path(_).absolute())
+        logger.info("csv written to \n\t%s", Path(_).absolute())
 
     # save .tsv
     # if file_ext in [".tsv"]:
@@ -65,7 +65,7 @@ def save_xlsx_tsv_csv(
         _ = file.with_suffix(".tsv")
         _ = gen_filename(_)
         df_lst.to_csv(_, sep="\t", index=False, header=False)
-        logger.info("tsv written to %s", Path(_).absolute())
+        logger.info("tsv written to \n\t%s", Path(_).absolute())
 
     if ".xlsx" not in file_ext:
         return df_lst

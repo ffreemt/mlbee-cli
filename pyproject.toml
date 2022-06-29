@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mlbee"
-version = "0.1.0-alpha.2"
+version = "0.1.0-alpha.3"
 description = "mlbee cli: a multilingual aligner based on a machine learning model"
 authors = ["ffreemt"]
 license = "MIT"
@@ -24,6 +24,13 @@ XlsxWriter = "^3.0.3"
 alive-progress = "^2.4.1"
 sep-text = { version = "^0.1.0", optional = true }
 tenacity = "^8.0.1"
+fetch-radio-embed = "^0.1.0-alpha.0"
+sklearn = "^0.0"
+seg-text = "^0.1.2"
+cmat2aset = "^0.1.0-alpha.7"
+aset2pairs = "^0.1.0"
+more-itertools = "^8.13.0"
+fetch-radio-cmat2aset = "^0.1.0-alpha.0"
 
 [tool.poetry.extras]
 sep-text = ["sep-text"]
@@ -35,7 +42,7 @@ type = "poetry"
 memo = "echo poe test or poetry run poe test"
 test = "pytest tests"
 pyright = "pyright mlbee"
-flake8 = "flake8 mlbee --ignore F401,E501,F841"
+flake8 = "flake8 mlbee --ignore F401,E501,F841,C901"
 check = ["pyright", "flake8"]
 export = "poetry export --without-hashes -f requirements.txt -o requirements.txt"
 build = "poetry build"
@@ -44,7 +51,7 @@ release = ["test", "build", "publish"]
 lint = { cmd = "pylint mlbee" }
 isort = "isort tests mlbee"
 black = "black tests mlbee"
-formt = ["isort", "black"]
+format = ["isort", "black"]
 docstyle = "pydocstyle --convention=google tests mlbee"
 prerelease = {cmd = "poetry version prerelease && sync-version"}
 tunnel = {cmd = "ssh -CN ip_or_hostname_defined_in_hosts -L 9091:127.0.0.1:9091"}
