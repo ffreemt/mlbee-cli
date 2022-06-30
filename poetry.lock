@@ -202,7 +202,7 @@ typer = ">=0.4.1,<0.5.0"
 
 [[package]]
 name = "fetch-radio-embed"
-version = "0.1.0a0"
+version = "0.1.0"
 description = "fetch embeding from hf radio-embed"
 category = "main"
 optional = false
@@ -902,7 +902,7 @@ sep-text = ["sep-text"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8.3"
-content-hash = "1e282cd51b1ac543a77b64af8e514dbdf5fc4d64bf43a581aacb127dd7d58379"
+content-hash = "5886c03c34db5ee1e9635dad6e8e99e71bebe53e7aa5691b2cd558ba528d966f"
 
 [metadata.files]
 about-time = [
@@ -1000,8 +1000,8 @@ fetch-radio-cmat2aset = [
     {file = "fetch_radio_cmat2aset-0.1.0a0.tar.gz", hash = "sha256:8b8720ccb6f2e13282deaa47af778f0d6bacfbbe8e893cc7b478e14faa5ae646"},
 ]
 fetch-radio-embed = [
-    {file = "fetch_radio_embed-0.1.0a0-py3-none-any.whl", hash = "sha256:1008dad5709e3a745ba031aad094bf8fe568a91189117aa30b2f328d1a667146"},
-    {file = "fetch_radio_embed-0.1.0a0.tar.gz", hash = "sha256:63876fccd1e4e75450fef0dcad0a6113670769336ee1a935c21baca38966afdd"},
+    {file = "fetch_radio_embed-0.1.0-py3-none-any.whl", hash = "sha256:c8f330ede294cf68c8cdacd2f1a66f93f36e42cb984ced727c45473e689125b2"},
+    {file = "fetch_radio_embed-0.1.0.tar.gz", hash = "sha256:15ab5b02158769652a1fae5578ae021d9b7b1bd5bf2c39c67be09544089a18af"},
 ]
 flake8 = [
     {file = "flake8-3.9.2-py2.py3-none-any.whl", hash = "sha256:bf8fd333346d844f616e8d47905ef3a3384edae6b4e9beb0c5101e25e3110907"},

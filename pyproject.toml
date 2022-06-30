@@ -24,7 +24,7 @@ XlsxWriter = "^3.0.3"
 alive-progress = "^2.4.1"
 sep-text = { version = "^0.1.0", optional = true }
 tenacity = "^8.0.1"
-fetch-radio-embed = "^0.1.0-alpha.0"
+fetch-radio-embed = "^0.1.0"
 sklearn = "^0.0"
 seg-text = "^0.1.2"
 cmat2aset = "^0.1.0-alpha.7"

@@ -100,13 +100,13 @@ def main(
         help="Separate mixed text to two texts before aligning.",
     ),
     flag: bool = typer.Option(
-        False,
+        True,
         "--flag",
         "-f",
         # "--remote_align",
         # "-r",
         # is_flag=True,
-        help="If not set, for short texts (<=2000 paras or <=600 paras and split-to-sents is set), everything is done on the remote API.",
+        help="If unset (flag=True), do everything on the remote API. If set (flag=False), fetch embeddings from remote but process locally because of timeout issue. Consider turn this on for huggingface, e.g. -f -a hf",
     ),
     save_xlsx: bool = typer.Option(
         True,
@@ -138,7 +138,7 @@ def main(
     e.g.
 
     * mlbee file1 file2  # xlsx and tsv
-    
+
     * mlbee file1 file2 -a local  # use api at local radio_mlbee server, pytohn -m radio_mlbee
 
     * mlbee file1 file2 -s # split to sents and align
@@ -151,11 +151,11 @@ def main(
 
     * mlbee file1 file2 --no-save-xlsx --save-csv  # just csv
     """
-    if api_url.startswith("local"):
+    if api_url.lower().startswith("local"):
         api_url = api_url_local
-    if api_url.startswith("forindo"):
+    if api_url.lower().startswith("forindo"):
         api_url = api_url_forindo
-    if api_url.startswith("hf") or api_url.startswith("huggingface"):
+    if api_url.lower().startswith("hf") or api_url.startswith("huggingface"):
         api_url = api_url_hf
 
     logger.debug("files: %s", files)
@@ -344,15 +344,18 @@ def main(
         raise typer.Exit(code=1)
 
     # ########################################## branch
-    # short batch, send to hf
-    if (
+    # if flag is set, do everything  on remote api
+    # if flag is not set, do everything on remote api for short batches
+    # (hf timeout 60 secs)
+    if flag or (
         len12 < 2000 and not split_to_sents or len12 < 600 and len12 < 2000 and not split_to_sents or len12 < 600 and split_to_sents
-    ) and not flag:
-        logger.info("Doing everythong on hf... sit tight.")
+    ):
+        logger.info("Doing everything on remote server... sit tight.")
 
         if split_to_sents:
-            len12 = 3.5 * len12  # estimate 3.5x for sents
-
+            blocks = f" est. {3.5 * len12} sents"  # estimate 3.5x for sents
+        else:
+            blocks = f"{len12} paras"
         # print estimated completion time
         factor = 6.6
         time_min = 0.4 / 12 / factor
@@ -367,15 +370,16 @@ def main(
         dt_str = eta.to_datetime_string()
         timezone_name = eta.timezone_name
         _ = (
-            f" tot: {len1} + {len2} = {len12} blocks \n"
+            f" tot: {len1} + {len2}, {len12} \n"
             f"Estimated time to complete: {in_words0} to  {in_words1}; "
             f"ETA: {diff_for_humans} ({dt_str} {timezone_name}) "
+            "-- apparently only valid if the number of blocks is not too large, say, smaller than 4000"
         )
 
         logger.info(_)
 
         try:
-            logger.info("Delegating tasks to remote API...")
+            logger.info("Delegating tasks to remote API %s...", api_url)
             with alive_bar(
                 total=1, force_tty=True, length=3, title="diggin..."
             ) as abar:
@@ -392,6 +396,8 @@ def main(
             raise typer.Exit()
 
     else:
+        # flag always False at this point
+        assert not flag, f" flag: {flag}, not supposed to happen."
         # ########################################## branch
         # long batch, get cmat from hf or other api
         # process locally
