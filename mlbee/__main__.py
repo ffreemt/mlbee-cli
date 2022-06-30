@@ -8,6 +8,7 @@ import httpx
 import logzero
 import more_itertools as mit
 import pendulum
+import psutil
 import typer
 from about_time import about_time
 from alive_progress import alive_bar
@@ -137,6 +138,8 @@ def main(
     e.g.
 
     * mlbee file1 file2  # xlsx and tsv
+    
+    * mlbee file1 file2 -a local  # use api at local radio_mlbee server, pytohn -m radio_mlbee
 
     * mlbee file1 file2 -s # split to sents and align
 
@@ -178,7 +181,7 @@ def main(
     ]
     logger.info("options: %s", dict(zip(_, options)))
 
-    # raise typer.Exit(0)
+    # raise typer.Exit(code=0)
 
     logger.info("Probing the api-url: %s", api_url)
     with about_time() as t:
@@ -187,10 +190,19 @@ def main(
             _ = httpx.post(api_url, json={"data": data})
             _.raise_for_status()
         except Exception as exc:
-            logger.exception(exc)
-            typer.echo(" Looks like is not available...")
-            typer.Exit(1)
-    logger.debug(" %s is alive, round trip time about %s", api_url, t.duration_human)
+            logger.error("%s", exc)
+            logger.info(" Looks like %s is not available...", api_url)
+            _ = f" Looks like {api_url} is not available...That's all we know."
+            _ = typer.style(
+                _,
+                fg=typer.colors.WHITE,
+                bg=typer.colors.RED,
+                bold=True,
+            )
+            typer.echo(_)
+            raise typer.Exit(code=1)
+
+    logger.debug(" %s is alive, response time about %s", api_url, t.duration_human)
     rtt = typer.style(
         t.duration_human,
         fg=typer.colors.WHITE,
@@ -198,7 +210,7 @@ def main(
         bold=True,
     )
 
-    typer.echo(f"\t{api_url} is alive\n\tround trip time about {rtt}")
+    typer.echo(f"\t{api_url} is alive\n\t response time about {rtt}")
 
     logger.info("Collecting inputs...")
 
@@ -221,7 +233,7 @@ def main(
         except ModuleNotFoundError as exc:
             msg1 = typer.style("[sep-text]", fg=typer.colors.WHITE, bg=typer.colors.RED)
             msg2 = typer.style(
-                "pip install sep-text", fg=typer.colors.WHITE, bg=typer.colors.RED
+                "pip install sep-text", fg=typer.colors.WHITE, bg=typer.colors.RED, bold=True,
             )
             typer.echo(
                 "To use this option to need to install sep-text, "
@@ -247,7 +259,7 @@ def main(
     # have to specify -s or --need-sep/sep-mixed-text."
     if len(files) == 1 and not sep_mixed_text:
         mixed = typer.style(
-            "--sep-mixed-text", fg=typer.colors.WHITE, bg=typer.colors.RED
+            "--sep-mixed-text", fg=typer.colors.WHITE, bg=typer.colors.RED, bold=True,
         )
         typer.echo(
             "If you only provide one file, you'll have to " f"use the {mixed} switch."
@@ -329,7 +341,7 @@ def main(
                 bold=True,
             )
         )
-        raise typer.Exit(1)
+        raise typer.Exit(code=1)
 
     # ########################################## branch
     # short batch, send to hf
@@ -392,13 +404,13 @@ def main(
                 try:
                     list1 = seg_text(list1)
                 except Exception as exc:
-                    logger.exception(exc)
+                    logger.error(exc)
                     logger.warning("Can't seem to split to sents. We leave as is.")
                 abar()
                 try:
                     list2 = seg_text(list2)
                 except Exception as exc:
-                    logger.exception(exc)
+                    logger.error(exc)
                     logger.warning("Can't seem to split to sents. We leave as is.")
                 abar()
 
@@ -457,41 +469,49 @@ def main(
         len1 = len(vec1)
         len2 = len(vec2)
 
-        with alive_bar(title="diggin cmat..."):
+        # with alive_bar(title="diggin cmat..."):
+        avail_memo = psutil.virtual_memory().available  # bits, / 1024**2 -> M
+        req_memo = len1 * len2 * 8  # 8 bytes: float64
 
-            import psutil
-            free_memo = psutil.virtual_memory().free  # bytes, / 1024**2 -> M
-            req_memo = len1 * len2 * 8  # bytes
+        avail_memo_ = round(avail_memo / 1024 ** 2 / 8, 2)  # /8->bytes
+        req_memo_ = round(req_memo / 1024 ** 2, 2)
+        logger.info("available memory: %s M, required memory: %s M", avail_memo_, req_memo_)
 
-            free_memo_ = round(free_memo / 1024 ** 2, 2)
-            req_memo_ = round(req_memo / 1024 ** 2, 2)
-            logger.info("free memory: %s M, required memory: %s M", free_memo_, req_memo_)
+        if avail_memo < req_memo:
+            logger.warning("\n\t You are running low on RAM, expect OOM.")
 
-            if free_memo < req_memo:
-                logger.warning(" You are running low on RAM, expect OOM.")
+        try:
+            # note the order vec2, vec1
+            cmat = cosine_similarity(vec2, vec1)
+        except Exception as exc:
+            logger.error("%s, exiting...", exc)
+            if "unable to allocate" in str(exc).lower():
+                logger.info("Looks like you need to get more RAM, sorry man.")
+            raise typer.Exit(code=1)
 
-            try:
-                # note the order vec2, vec1
-                cmat = cosine_similarity(vec2, vec1)
-            except Exception as exc:
-                logger.error(exc)
-                raise typer.Exit(1)
+        try:
+            cmat = cmat.tolist()
+        except Exception as exc:
+            logger.error(exc)
+            logger.error("")
+            raise typer.Exit(1)
 
         with alive_bar(title="diggin aset...") as abar:
             # aset = cmat2aset(cmat)
             try:
-                cmat = cmat.tolist()
                 aset = fetch_radio_cmat2aset(cmat)
             except Exception as exc:
                 logger.error(exc)
                 raise typer.Exit(1)
 
             logger.debug("aset[:10]: %s", aset[:10])
+            logger.debug("")
             abar()
-        with alive_bar(title="diggin aligned_pairs...") as abar:
-            aligned_pairs = aset2pairs(list1, list2, aset)
-            logger.debug("aligned_pairs[:10]: %s", aligned_pairs[:10])
-            abar()
+
+        # with alive_bar(title="diggin aligned_pairs...") as abar:
+        aligned_pairs = aset2pairs(list1, list2, aset)
+        logger.debug("aligned_pairs[:10]: %s", aligned_pairs[:10])
+        # abar()
 
     # ###### common part: saving
     logger.debug("Proceed with saving files...")
@@ -513,4 +533,7 @@ def main(
 
 
 if __name__ == "__main__":
-    app()
+    try:
+        app()
+    except Exception as exc:
+        logger.error(exc)

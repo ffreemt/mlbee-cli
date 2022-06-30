@@ -141,3 +141,6 @@ cython_debug/
 links/
 # .gitignore
 node_modules
+data/*xlsx
+data/*.tsv
+data/*.csv
