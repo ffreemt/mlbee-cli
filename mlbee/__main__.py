@@ -1,5 +1,5 @@
 """Prep __main__ entry."""
-# pylint: disable=invalid-name, too-many-locals, too-many-arguments, too-many-branches, too-many-statements, duplicate-code, import-outside-toplevel
+# pylint: disable=invalid-name, too-many-locals, too-many-arguments, too-many-branches, too-many-statements, duplicate-code, import-outside-toplevel, too-many-boolean-expressions
 from pathlib import Path
 from textwrap import dedent
 from typing import List, Optional
@@ -11,7 +11,8 @@ import pendulum
 import psutil
 import typer
 from about_time import about_time
-from alive_progress import alive_bar
+
+# from alive_progress import alive_bar
 from aset2pairs import aset2pairs
 
 # from cmat2aset import cmat2aset
@@ -139,7 +140,7 @@ def main(
 
     * mlbee file1 file2  # xlsx and tsv
 
-    * mlbee file1 file2 -a local  # use api at local radio_mlbee server, pytohn -m radio_mlbee
+    * mlbee file1 file2 -a local  # use api at local radio_mlbee server
 
     * mlbee file1 file2 -s # split to sents and align
 
@@ -412,13 +413,13 @@ def main(
                 except Exception as exc:
                     logger.error(exc)
                     logger.warning("Can't seem to split to sents. We leave as is.")
-                abar()
+                abar()  # pylint: disable=not-callable
                 try:
                     list2 = seg_text(list2)
                 except Exception as exc:
                     logger.error(exc)
                     logger.warning("Can't seem to split to sents. We leave as is.")
-                abar()
+                abar()  # pylint: disable=not-callable
 
         len1 = len(list1)
         len2 = len(list2)
@@ -483,7 +484,7 @@ def main(
         req_memo_ = round(req_memo / 1024 ** 2, 2)
         logger.info("available memory: %s M, required memory: %s M", avail_memo_, req_memo_)
 
-        if avail_memo < req_memo:
+        if avail_memo_ < req_memo_:
             logger.warning("\n\t You are running low on RAM, expect OOM.")
 
         try:
@@ -499,7 +500,7 @@ def main(
             cmat = cmat.tolist()
         except Exception as exc:
             logger.error(exc)
-            logger.error("")
+            # logger.error("")
             raise typer.Exit(1)
 
         with alive_bar(title="diggin aset...") as abar:
@@ -512,7 +513,7 @@ def main(
 
             logger.debug("aset[:10]: %s", aset[:10])
             logger.debug("")
-            abar()
+            abar()  # pylint: disable=not-callable
 
         # with alive_bar(title="diggin aligned_pairs...") as abar:
         aligned_pairs = aset2pairs(list1, list2, aset)
@@ -541,5 +542,5 @@ def main(
 if __name__ == "__main__":
     try:
         app()
-    except Exception as exc:
-        logger.error(exc)
+    except Exception as _:
+        logger.error(_)

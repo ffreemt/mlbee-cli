@@ -12,14 +12,14 @@ def alive_bar(*args, **kwargs):
     local_kw.update(**kwargs)
     if local_kw.get("length"):
         try:
-            local_kw["length"] = int(local_kw.get("length"))
+            local_kw["length"] = int(local_kw.get("length"))  # type:ignore
         except Exception:  # pylint: disable=bare-except
             local_kw["length"] = 3
-        if local_kw.get("length") < 3:
+        if local_kw.get("length") < 3:  # type:ignore
             local_kw["length"] = 3  # or is invalid
 
     # update length for total > 3
-    if local_kw["total"] > 3 and local_kw["length"] == 3:
+    if local_kw["total"] > 3 and local_kw["length"] == 3:  # type:ignore
         local_kw["length"] = local_kw["total"]
 
     return o_alive_bar(*args, **local_kw)
