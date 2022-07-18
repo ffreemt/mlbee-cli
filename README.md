@@ -6,13 +6,16 @@ mlbee cli: a multilingual aligner based on a machine learning model
 ## Install it
 
 ```shell
-pip install git+https://github.com/ffreemt/mlbee
+pip install mlbee
+
+# pip install git+https://github.com/ffreemt/mlbee-cli
 # poetry add git+https://github.com/ffreemt/mlbee-cli
 # git clone https://github.com/ffreemt/mlbee-cli && cd mlbee-cli
 ```
 
 ## Use it
-```python
-from mlbee import mlbee
+```shell
+python -m mlbee --help
+# or mlbee --help
 
 ```
